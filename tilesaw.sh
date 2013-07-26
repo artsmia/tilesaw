@@ -8,19 +8,19 @@ if [ ! -f $image ]; then
   exit 1
 fi
 
-name="${image%.*}"
-extension="${image##*.}"
+name="${image%.*}" # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
+extension="${image##*.}" # bash black magic
 
 tile_dir=tiles/$name
 mkdir -p $tile_dir
-rm -rf $tile_dir # make sure tiles/ exists, clear tiles/$name if that exists
+rm -rf $tile_dir # make sure tiles/ exists, then clear tiles/$name
 
 vips dzsave $image $tile_dir --layout=google
 
 metadata="{ \"name\": \"$name\",
-  \"width\": \"$(exiftool $image | grep Width | cut -d ':' -f2 | tr -d ' ')\",
-  \"height\": \"$(exiftool $image | grep Height | cut -d ':' -f2 | tr -d ' ')\"
+  \"width\": \"$(exiftool $image | grep Width | head -1 | cut -d ':' -f2 | tr -d ' ')\",
+  \"height\": \"$(exiftool $image | grep Height | head -1 | cut -d ':' -f2 | tr -d ' ')\"
 }"
 echo $metadata > $tile_dir/metadata.json
 
-mb-util $tile_dir/ $name.mbtiles --image_format=$extension
+mb-util $tile_dir/ $name.mbtiles --image_format=jpg
