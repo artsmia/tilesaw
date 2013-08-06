@@ -3,12 +3,12 @@ var http = require('http'),
     express = require('express'),
     fs = require('fs'),
     exec = require('exec')
+    dx = require('./dx')
 
 app = express()
 
-app.get('/:maxDimension/:image', function(req, res) {
+app.get('/:image', function(req, res) {
   var image = req.params.image,
-      size = req.params.maxDimension,
       imageName = image.replace(/\.\w+$/, '')
 
   res.header('Access-Control-Allow-Origin', '*');
@@ -20,8 +20,8 @@ app.get('/:maxDimension/:image', function(req, res) {
     if(tile_res.statusCode == '200') {
       tile_res.pipe(res) // pipe through the JSON from tilestream
     } else {
-      res.send(404)
-      console.log('tilesaw', tile_res.statusCode)
+      res.send(404) // return 404 then start the tiling process
+      var size = dx.maxDimension(image)
 
       if(image != undefined) {
         var imageUrl = "http://api.artsmia.org/images/1/tdx/"+size+"/"+image
