@@ -15,7 +15,7 @@ tile_dir=tiles/$name
 mkdir -p $tile_dir
 rm -rf $tile_dir # make sure tiles/ exists, then clear tiles/$name
 
-vips dzsave $image $tile_dir --layout=google
+vips dzsave $image $tile_dir --layout=google || { echo 'vips failed'; exit 1; }
 
 metadata="{ \"name\": \"$name\",
   \"width\": \"$(exiftool $image | grep Width | head -1 | cut -d ':' -f2 | tr -d ' ')\",
