@@ -1,0 +1,26 @@
+{
+  "name": "tilesaw",
+  "version": "0.0.0",
+  "description": "Cut an image into (mb)tiles",
+  "main": "index.js",
+  "dependencies": {
+    "connect": "~2.8.4",
+    "http-get": "~0.5.10",
+    "express": "~3.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kjell/tilesaw.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "gitHead": "5fa1ad9a58e9200d95bb1033cd19592c25a9a102",
+  "readmeFilename": "readme.md",
+  "bugs": {
+    "url": "https://github.com/kjell/tilesaw/issues"
+  }
+}
