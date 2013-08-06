@@ -6,7 +6,8 @@
   "dependencies": {
     "connect": "~2.8.4",
     "http-get": "~0.5.10",
-    "express": "~3.3.4"
+    "express": "~3.3.4",
+    "exec": "0.0.6"
   },
   "devDependencies": {},
   "scripts": {

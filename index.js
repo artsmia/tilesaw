@@ -2,9 +2,9 @@ var http = require('http'),
     httpget = require('http-get'),
     express = require('express'),
     fs = require('fs'),
-    spawn = require('child_process').spawn;
+    exec = require('exec')
 
-app = express();
+app = express()
 
 app.get('/:maxDimension/:image', function(req, res) {
   var image = req.params.image,
@@ -32,13 +32,15 @@ app.get('/:maxDimension/:image', function(req, res) {
 
         httpget.get({url: imageUrl}, imageFile, function(error, result) {
           console.log(result.file)
-          var saw = spawn(tilesaw, [imageFile])
-          saw.on('close', function(code) {
-            mv = spawn('mv', [imageName + '.mbtiles', '/Users/kolsen/Documents/MapBox/tiles/'])
-            spawn('rm', [imageName + '.jpg'])
-            mv.on('close', function(code) {
-              console.log('moved')
-            })
+          var saw = exec([tilesaw, imageFile], function(err, out, code) {
+            console.log('tilesaw', err, out, code)
+            if(code == 0) {
+              mv = exec(['mv', imageName + '.mbtiles', '/Users/kolsen/Documents/MapBox/tiles/'], function(err, out, code) {
+                exec(['rm', imageName + '.jpg'], function() {})
+              })
+            } else {
+              console.log('error')
+            }
           })
         })
       }
