@@ -15,7 +15,7 @@ app.get('/:image', function(req, res) {
   var image = req.params.image,
       imageName = image.replace(/\.\w+$/, '')
 
-  if(imageName == undefined) return
+  if(imageName == undefined || imageName == 'favicon') return
 
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'GET')
@@ -43,11 +43,10 @@ app.get('/:image', function(req, res) {
 
         progressRef.set({status: 'downloading original image'})
         console.log('getting image: ' + imageUrl)
-        httpget.get({url: imageUrl}, imageFile, function(error, result) {
-          console.log('got image')
+        httpget.get({url: imageUrl}, tilesawPath + '/' + imageFile, function(error, result) {
           progressRef.set({status: 'processing image'})
-          console.log(result.file)
-          var saw = exec([tilesaw, imageFile], function(err, out, code) {
+          if(result == undefined) { console.log(error); return }
+          var saw = exec([tilesaw, tilesawPath + '/' + imageFile], function(err, out, code) {
             console.log('tilesaw', err, out, code)
             if(code == 0) {
               mv = exec(['mv', imageName + '.mbtiles', tileDirectory], function(err, out, code) {
