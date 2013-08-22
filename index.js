@@ -51,8 +51,10 @@ app.get('/:image', function(req, res) {
           progressRef.set({status: 'processing image'})
           if(result == undefined) { client.captureError(error); return }
           var saw = exec([tilesaw, tilesawPath + '/' + imageFile], function(err, out, code) {
+	    client.captureMessage(imageName + ' processed')
             if(code == 0) {
               mv = exec(['mv', imageName + '.mbtiles', tileDirectory], function(err, out, code) {
+		console.log('mv', imageName + '.mbtiles', tileDirectory)
                 exec(['rm', imageName + '.jpg'], function() {})
                 progressRef.set({status: 'tiled'})
               })
