@@ -25,17 +25,17 @@ app.get('/:image', function(req, res) {
 
   tileJson = tileserver+imageName+'.json'
   http.get(tileJson, function(tile_res) {
-    client.captureMessage(req.params, tile_res.statusCode)
+    raven.captureMessage('get ' + tileJson + ': ' + tile_res.statusCode)
     var progressRef = new firebase("https://tilesaw.firebaseio.com/"+imageName)
     if(tile_res.statusCode == '200') {
       tile_res.pipe(res) // pipe through the JSON from tilestream
       progressRef.set({status: 'tiled'})
-      client.captureMessage('already tiled, piping tilestream')
+      raven.captureMessage('already tiled, piping tilestream')
     } else {
       res.send(404) // return 404 then start the tiling process [TODO: use raw websockets instead of firebase?]
       var size = dx.maxDimension(imageName)
       console.log('image size :' + size)
-      client.captureMessage(imageName + ' not yet tiled, commence sawing')
+      raven.captureMessage(imageName + ' not yet tiled, commence sawing')
 
       if(image != undefined) {
         var imageUrl = "http://api.artsmia.org/images/1/tdx/"+size+"/"+image
@@ -47,11 +47,11 @@ app.get('/:image', function(req, res) {
 
         progressRef.set({status: 'downloading original image'})
         httpget.get({url: imageUrl}, tilesawPath + '/' + imageFile, function(error, result) {
-          client.captureMessage(imageName + ' downloaded')
+          raven.captureMessage(imageName + ' downloaded')
           progressRef.set({status: 'processing image'})
-          if(result == undefined) { client.captureError(error); return }
+          if(result == undefined) { raven.captureError(error); return }
           var saw = exec([tilesaw, tilesawPath + '/' + imageFile], function(err, out, code) {
-	    client.captureMessage(imageName + ' processed')
+	    raven.captureMessage(imageName + ' processed')
             if(code == 0) {
               mv = exec(['mv', imageName + '.mbtiles', tileDirectory], function(err, out, code) {
 		console.log('mv', imageName + '.mbtiles', tileDirectory)
@@ -59,7 +59,7 @@ app.get('/:image', function(req, res) {
                 progressRef.set({status: 'tiled'})
               })
             } else {
-              client.captureError(error)
+              raven.captureError(error)
             }
           })
         })
