@@ -25,17 +25,14 @@ app.get('/:image', function(req, res) {
 
   tileJson = tileserver+imageName+'.json'
   http.get(tileJson, function(tile_res) {
-    raven.captureMessage('get ' + tileJson + ': ' + tile_res.statusCode)
     var progressRef = new firebase("https://tilesaw.firebaseio.com/"+imageName)
     if(tile_res.statusCode == '200') {
       tile_res.pipe(res) // pipe through the JSON from tilestream
       progressRef.set({status: 'tiled'})
-      raven.captureMessage('already tiled, piping tilestream')
     } else {
       res.send(404) // return 404 then start the tiling process [TODO: use raw websockets instead of firebase?]
       var size = dx.maxDimension(imageName)
       console.log('image size :' + size)
-      raven.captureMessage(imageName + ' not yet tiled, commence sawing')
 
       if(image != undefined) {
         var imageUrl = "http://api.artsmia.org/images/1/tdx/"+size+"/"+image
@@ -47,14 +44,12 @@ app.get('/:image', function(req, res) {
 
         progressRef.set({status: 'downloading original image'})
         httpget.get({url: imageUrl}, tilesawPath + '/' + imageFile, function(error, result) {
-          raven.captureMessage(imageName + ' downloaded')
           progressRef.set({status: 'processing image'})
           if(result == undefined) { raven.captureError(error); return }
           var saw = exec([tilesaw, tilesawPath + '/' + imageFile], function(err, out, code) {
-	    raven.captureMessage(imageName + ' processed')
             if(code == 0) {
               mv = exec(['mv', imageName + '.mbtiles', tileDirectory], function(err, out, code) {
-		console.log('mv', imageName + '.mbtiles', tileDirectory)
+                console.log('mv', imageName + '.mbtiles', tileDirectory)
                 exec(['rm', imageName + '.jpg'], function() {})
                 progressRef.set({status: 'tiled'})
               })
