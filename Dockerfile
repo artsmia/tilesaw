@@ -9,7 +9,7 @@ run cd /opt/tilesaw; npm install
 
 env TILESAW /opt/tilesaw
 env LOG /var/log/tilesaw.log
-env TILESERVER http://tiles.dx.artsmia.org/v2
+env TILESERVER http://tiles.dx.artsmia.org/v2/
 env TILESAW_PATH /opt/tilesaw
 env TILE_DIRECTORY /data/tilesaw
 env PORT 8887
