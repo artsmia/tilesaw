@@ -23,4 +23,5 @@ metadata="{ \"name\": \"$name\",
 }"
 echo $metadata > $tile_dir/metadata.json
 
-mb-util $tile_dir/ $name.mbtiles --image_format=jpg
+mb-util $tile_dir/ $name.mbtiles --image_format=jpg 2> /dev/null
+echo
