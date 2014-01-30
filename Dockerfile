@@ -15,4 +15,4 @@ env TILE_DIRECTORY /data/tilesaw
 env PORT 8887
 expose 8887 8888 8889
 cmd ["/usr/local/bin/node", "/opt/tilesaw/index.js"]
-cmd ["/usr/local/bin/node", "/opt/tilesaw/node_modules/tilestream/index.js", "start", "--host='*'", "--tilePort=8888", "--uiPort=8889", "--tiles=/data/tilestream", "--subdomains=0,1,2,3"]
+cmd ["/usr/local/bin/node", "/opt/tilesaw/node_modules/tilestream/index.js", "start", "--host='*'", "--tilePort=8888", "--uiPort=8889", "--tiles=/data/tiles", "--subdomains=0,1,2,3"]
