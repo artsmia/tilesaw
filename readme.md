@@ -1,5 +1,8 @@
 # Tilesaw
 
+[![Tiled Arch, Artist Unknown, Pakistan, 18th
+century](./tiles.jpg)](https://collections.artsmia.org/index.php?page=detail&id=99789)
+
 Builds off @jcupitt's [libvips](//github.com/jcupitt/libvips) and
 [mapbox/mbutil](//github.com/mapbox/mbutil) to cut images
 into map tiles.
