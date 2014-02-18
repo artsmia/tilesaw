@@ -64,4 +64,4 @@ app.get('/:image', function(req, res) {
 })
 
 http.createServer(app).listen(process.env.PORT || 8887);
-console.log('tilesaw running on ' + process.env.PORT || 8887)
+console.log('tilesaw running on ' + (process.env.PORT || 8887))
