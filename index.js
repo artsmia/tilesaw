@@ -1,7 +1,8 @@
 var http = require('http'),
     express = require('express'),
     exec = require('exec'),
-    fs = require('fs')
+    fs = require('fs'),
+    mkdirp = require('mkdirp')
 
 app = express()
 
@@ -11,6 +12,8 @@ var tileserver = process.env.TILESERVER || 'http://localhost:8888/v2/',
     tiledirectory = process.env.TILEDIR || home('Documents/MapBox/tiles/'),
     tilesaw = process.env.TILESAW || home('tmp/tilesaw/'),
     directories = [imagedirectory, tiledirectory, tilesaw]
+
+directories.forEach(mkdirp.sync)
 
 app.get('/:image', function(req, res) {
   var image = req.params.image,
