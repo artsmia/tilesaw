@@ -19,7 +19,8 @@ vips dzsave $image $tile_dir --layout=google || { echo 'vips failed'; exit 1; }
 
 metadata="{ \"name\": \"$name\",
   \"width\": \"$(exiftool $image | grep Width | head -1 | cut -d ':' -f2 | tr -d ' ')\",
-  \"height\": \"$(exiftool $image | grep Height | head -1 | cut -d ':' -f2 | tr -d ' ')\"
+  \"height\": \"$(exiftool $image | grep Height | head -1 | cut -d ':' -f2 | tr -d ' ')\",
+  \"objectId\": \"$(exiftool $image | grep Transmission | head -1 | tr -d 'Transmission Reference          :')\"
 }"
 echo $metadata > $tile_dir/metadata.json
 
