@@ -6,9 +6,11 @@ var http = require('http'),
 app = express()
 
 var tileserver = process.env.TILESERVER || 'http://localhost:8888/v2/',
-    imagedirectory = process.env.IMAGEDIRECTORY || '/Users/kjell/tmp/data/images/',
-    tiledirectory = process.env.TILEDIR || '/Users/kjell/Documents/MapBox/tiles/',
-    tilesaw = process.env.TILESAW || '/Users/kjell/tmp/tilesaw/'
+    home = function(path) { return process.env.HOME + '/' + path },
+    imagedirectory = process.env.IMAGEDIRECTORY || home('tmp/tilesaw/data/images/'),
+    tiledirectory = process.env.TILEDIR || home('Documents/MapBox/tiles/'),
+    tilesaw = process.env.TILESAW || home('tmp/tilesaw/'),
+    directories = [imagedirectory, tiledirectory, tilesaw]
 
 app.get('/:image', function(req, res) {
   var image = req.params.image,
