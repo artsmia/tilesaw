@@ -40,5 +40,8 @@ app.get('/:image', function(req, res) {
   })
 })
 
+var manifest = require('./manifest')
+app.get('/', manifest)
+
 http.createServer(app).listen(process.env.PORT || 8887);
 console.log('tilesaw running on ' + (process.env.PORT || 8887))

@@ -26,6 +26,12 @@ non-square tiles.
 An `express.js` app that brokers (a) serving and (b) downloading and
 tiling new images, to then be served.
 
+The tilesaw server has two methods:
+
+* `/`: list all available, tiled images
+* `/:image`: return `tileJson` for `:image`. If the image hasn't been
+  tiled yet, attempt to retrieve it and process it into tiles.
+
 * [`tilestream`][] serves tiles that have already been converted
 * `index.js` (`index.example.js` for a stub implementation) takes the
   name of an image and checks whether it's been tiled yet. If it has
