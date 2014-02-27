@@ -16,8 +16,10 @@ leaflet. It uses `vips` for the tiling, `exiftool` to ensure `{width: …,
 height: …}` exist in the resulting `metadata.json`, and `mb-util` to
 package the tiles as `.mbtiles`.
 
-I've built my own [`vips`][] that tiles images `(z/x/y)` (instead of
-`(z/y/x)`) and doesn't pad non-square tiles.
+I've built my own
+[`vips`](https://github.com/kjell/libvips/tree/dzsave-zxy-no-padding)
+that tiles images `(z/x/y)` (instead of `(z/y/x)`) and doesn't pad
+non-square tiles.
 
 ### index.js
 
@@ -33,11 +35,71 @@ tiling new images, to then be served.
 
 ## Installation
 
+### Ubuntu, by hand
+
+It's not too touch to install by hand, but you have to know what you're
+doing.
+
+First, install vips:
+
+```
+sudo apt-get update
+sudo apt-get install build-essential gettext-base libglib2.0-dev libxml2-dev pkg-config pkg-config swig gtk-doc-tools automake gobject-introspection make libtiff-dev libjpeg-dev libpng-dev libexif-dev
+git clone http://github.com/kjell/libvips.git
+cd libvips
+git checkout dzsave-zxy-no-padding
+./bootstrap.sh
+autoconf
+./configure
+make
+sudo make install
+export LD_LIBRARY_PATH=/usr/local/lib
+```
+
+vips should be working. Test it with `vips --version`.
+
+Next, install nodejs and python:
+
+``
+sudo apt-get install python-software-properties python python-setuptools g++ make
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install libsqlite3-dev nodejs-dev npm libimage-exiftool-perl
+```
+
+Finally, install `mb-util` and `tilesaw`.
+
+```
+git clone https://github.com/mapbox/mbutil /tmp/mbutil
+cd /tmp/mbutil
+sudo python setup.py install
+
+git clone https://github.com/artsmia/tilesaw /tmp/tilesaw
+cd /tmp/tilesaw
+npm install
+```
+
+Now you can start tilesaw (`npm start`).
+
+By default runs on port 8887, with tilestream on 8888. To run it you'll
+need to set a few environment variables:
+
+```
+PORT # 8887
+IMAGEDIRECTORY # the directory to look for untiled images
+TILEDIR # Where to put the tiles
+TILESAW # Where is the tilesaw script?
+```
+
+### Docker
+
 So far the nodejs parts are should be easily replicable using Docker. If
 that's not your thing, the `Dockerfile` lays out what needs to happen to
 make everything work.
 
 The vips installation isn't covered yet, that's coming soon.
+
+## Domain name
 
 Then these servers should be reverse proxied by `nginx` to a subdomain.
 We're using `tilesaw.dx.artsmia.org` and `tiles.dx.artsmia.org`.
