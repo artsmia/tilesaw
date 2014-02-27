@@ -33,6 +33,19 @@ tiling new images, to then be served.
   [`tilejson`][] for that image. If not, it attemts to download the
   full-res image and tile it.
 
+The app uses 'adapters' to find images to tile. Two example adapters are
+provided: `noop` and `directory`. When `tilesaw` can't find tiles for an
+image, it will try each adapter to find a suitable image. If the adapter
+succeeds, it's responsible for tiling the image and indicating its
+success. If not, the next adapter gets a try.
+
+* `adapters/noop.js` doesn't do anything. It logs a message to the
+  console and returns an error.
+* `adapters/directory.js` checks for a matching image in a predetermined
+  directory. If one exists, it's tiled and passed back to the client.
+
+If all the listed adapters fail, `tilesaw` will return a `404`.
+
 ## Installation
 
 ### Ubuntu, by hand
