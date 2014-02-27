@@ -3,7 +3,7 @@
 [![Tiled Arch, Artist Unknown, Pakistan, 18th
 century](./tiles.jpg)](https://collections.artsmia.org/index.php?page=detail&id=99789)
 
-Builds off @jcupitt's [libvips](//github.com/jcupitt/libvips) and
+Builds off [jcupitt/libvips](//github.com/jcupitt/libvips) and
 [mapbox/mbutil](//github.com/mapbox/mbutil) to cut images
 into map tiles.
 
@@ -16,50 +16,53 @@ leaflet. It uses `vips` for the tiling, `exiftool` to ensure `{width: …,
 height: …}` exist in the resulting `metadata.json`, and `mb-util` to
 package the tiles as `.mbtiles`.
 
-I've built my own
-[`vips`](https://github.com/kjell/libvips/tree/dzsave-zxy-no-padding)
-that tiles images `(z/x/y)` (instead of `(z/y/x)`) and doesn't pad
-non-square tiles.
+I've built my own [`vips`]() that tiles images `(z/x/y)` (instead of
+`(z/y/x)`) and doesn't pad non-square tiles.
 
 ### index.js
 
 An `express.js` app that brokers (a) serving and (b) downloading and
 tiling new images, to then be served.
 
+* `index.js`  takes the name of an image and checks whether it's been
+  tiled yet. If it has (indicated by an affirmative response from
+  `tilestream`, serve the [`tilejson`][] for that image. If not, it
+  attemts to download the full-res image and tile it.
+* [`tilestream`][] serves tiles that have already been converted
+
 The tilesaw server has two methods:
 
-* `/`: list all available, tiled images
+* `/`: list all available, tiled images.
 * `/:image`: return `tileJson` for `:image`. If the image hasn't been
   tiled yet, attempt to retrieve it and process it into tiles.
 
-* [`tilestream`][] serves tiles that have already been converted
-* `index.js` (`index.example.js` for a stub implementation) takes the
-  name of an image and checks whether it's been tiled yet. If it has
-  (indicated by an affirmative response from `tilestream`, serve the
-  [`tilejson`][] for that image. If not, it attemts to download the
-  full-res image and tile it.
+The app uses 'adapters' to find images to tile. When `tilesaw` can't
+find tiles for an image, it will try each adapter to find a suitable
+image. If the adapter succeeds, it's responsible for tiling the image
+and indicating its success. If not, the next adapter gets a try.
 
-The app uses 'adapters' to find images to tile. Two example adapters are
-provided: `noop` and `directory`. When `tilesaw` can't find tiles for an
-image, it will try each adapter to find a suitable image. If the adapter
-succeeds, it's responsible for tiling the image and indicating its
-success. If not, the next adapter gets a try.
+Each adapter is a `function(imageName, callback)`. The `node` callback
+style is `function(err, data)`: if `err` is non-null, something went
+wrong. Otherwise that adapter found an image matching `imageName` and
+tiled it.
+
+Two example adapters are provided:
 
 * `adapters/noop.js` doesn't do anything. It logs a message to the
   console and returns an error.
 * `adapters/directory.js` checks for a matching image in a predetermined
   directory. If one exists, it's tiled and passed back to the client.
 
-If all the listed adapters fail, `tilesaw` will return a `404`.
+[`var adapters = '…'`](https://github.com/kjell/tilesaw/blob/9d3f5f3efa6b317197b7e95be3c8b76530eda788/index.js#L8) is a space-delimited list of adapters to try. If all the listed adapters fail, `tilesaw` will return a `404`.
 
 ## Installation
 
 ### Ubuntu, by hand
 
-It's not too touch to install by hand, but you have to know what you're
+It's not too tough to install by hand, but you have to know what you're
 doing.
 
-First, install vips:
+First, install vips.
 
 ```
 sudo apt-get update
@@ -75,11 +78,11 @@ sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib
 ```
 
-vips should be working. Test it with `vips --version`.
+Test it with `vips --version`.
 
 Next, install nodejs and python:
 
-``
+```
 sudo apt-get install python-software-properties python python-setuptools g++ make
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
@@ -100,8 +103,8 @@ npm install
 
 Now you can start tilesaw (`npm start`).
 
-By default runs on port 8887, with tilestream on 8888. To run it you'll
-need to set a few environment variables:
+By default it runs on port 8887, with tilestream on 8888. To run it
+you'll need to set a few environment variables:
 
 ```
 PORT # 8887
@@ -118,7 +121,7 @@ make everything work.
 
 The vips installation isn't covered yet, that's coming soon.
 
-## Domain name
+## Domain names
 
 Then these servers should be reverse proxied by `nginx` to a subdomain.
 We're using `tilesaw.dx.artsmia.org` and `tiles.dx.artsmia.org`.
