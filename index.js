@@ -1,19 +1,11 @@
 var http = require('http'),
     express = require('express'),
-    exec = require('exec'),
-    fs = require('fs'),
-    mkdirp = require('mkdirp')
 
 app = express()
 
-var tileserver = process.env.TILESERVER || 'http://localhost:8888/v2/',
-    home = function(path) { return process.env.HOME + '/' + path },
-    imagedirectory = process.env.IMAGEDIRECTORY || home('tmp/tilesaw/data/images/'),
-    tiledirectory = process.env.TILEDIR || home('Documents/MapBox/tiles/'),
-    tilesaw = process.env.TILESAW || home('tmp/tilesaw/'),
-    directories = [imagedirectory, tiledirectory, tilesaw]
+var tileserver = process.env.TILESERVER || 'http://localhost:8888/v2/'
 
-directories.forEach(mkdirp.sync)
+var adapters = 'noop directory'
 
 app.get('/:image', function(req, res) {
   var image = req.params.image,
@@ -32,21 +24,18 @@ app.get('/:image', function(req, res) {
     if(tileRes.statusCode == '200') {
       tileRes.pipe(res) // pipe through the JSON from tilestream
     } else {
-      if (fs.existsSync(imagedirectory + '/' + imageName + '.jpg')) {
-        var image = imagedirectory+imageName+'.jpg'
-        var saw = exec([tilesaw+'tilesaw.sh', image], function(err, out, code) {
-          if(code == 0) {
-            mv = exec(['mv', imagedirectory + imageName + '.mbtiles', tiledirectory], function(err, out, code) {
-              http.get(tileJson, function(secondTileRes) { secondTileRes.pipe(res) })
-              exec(['rm', imagedirectory + imageName + '.jpg'], function() {})
-            })
-          } else {
-            res.send(404)
+      var _adapters = adapters.split(' ')
+      _adapters.some(function(adapter, index) {
+        return require('./adapters/'+adapter)(imageName, function(err, mbtiles) {
+          if(err) {
+            if(index+1 == _adapters.length) res.send(404, err)
+            return false
           }
+
+          http.get(tileJson, function(secondTileRes) { secondTileRes.pipe(res) })
+          return true
         })
-      } else {
-        res.send(404)
-      }
+      })
     }
   })
 })
