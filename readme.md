@@ -109,12 +109,12 @@ Now you can start tilesaw (`npm start`).
 By default it runs on port 8887, with tilestream on 8888. To run it
 you'll need to set a few environment variables:
 
-```
-PORT # 8887
-IMAGEDIRECTORY # the directory to look for untiled images
-TILEDIR # Where to put the tiles
-TILESAW # Where is the tilesaw script?
-```
+| environment variable | default | note |
+| --- | --- | --- |
+| PORT | 8887 | |
+| IMAGEDIRECTORY | ~/tmp/tilesaw/data/images | the directory to look for untiled images |
+| TILEDIR | ~/Documents/MapBox/tiles | Where to put the tiles |
+| TILESAW | ~/tmp/tilesaw | Where is the tilesaw script? |
 
 ### Docker
 
