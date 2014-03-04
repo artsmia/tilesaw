@@ -75,10 +75,13 @@ autoconf
 ./configure
 make
 sudo make install
-export LD_LIBRARY_PATH=/usr/local/lib
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.profile
 ```
 
-Test it with `vips --version`.
+Test it with `vips --version`. If you see `vips: error while loading
+shared libraries`, that means `vips` can't find its shared libraries.
+This is most likely because `LD_LIBRARY_PATH` isn't set in your shell.
 
 Next, install nodejs and python:
 
@@ -92,12 +95,12 @@ sudo apt-get install libsqlite3-dev sqlite3 nodejs-dev npm libimage-exiftool-per
 Finally, install `mb-util` and `tilesaw`.
 
 ```
-git clone https://github.com/mapbox/mbutil /tmp/mbutil
-cd /tmp/mbutil
+git clone https://github.com/mapbox/mbutil ~/tmp/mbutil
+cd ~/tmp/mbutil
 sudo python setup.py install
 
-git clone https://github.com/artsmia/tilesaw /tmp/tilesaw
-cd /tmp/tilesaw
+git clone https://github.com/artsmia/tilesaw ~/tmp/tilesaw
+cd ~/tmp/tilesaw
 npm install
 ```
 
