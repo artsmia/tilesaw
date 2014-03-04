@@ -86,7 +86,7 @@ Next, install nodejs and python:
 sudo apt-get install python-software-properties python python-setuptools g++ make
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
-sudo apt-get install libsqlite3-dev nodejs-dev npm libimage-exiftool-perl
+sudo apt-get install libsqlite3-dev sqlite3 nodejs-dev npm libimage-exiftool-perl
 ```
 
 Finally, install `mb-util` and `tilesaw`.
