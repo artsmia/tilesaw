@@ -1,9 +1,23 @@
 var http = require('http'),
     express = require('express'),
+    mkdirp = require('mkdirp')
 
 app = express()
 
 var tileserver = process.env.TILESERVER || 'http://localhost:8888/v2/'
+
+var home = function(path) { return process.env.HOME + '/' + path },
+    imagedirectory = process.env.IMAGEDIRECTORY || home('tmp/tilesaw/data/images/'),
+    tiledirectory = process.env.TILEDIR || home('Documents/MapBox/tiles/'),
+    tilesaw = process.env.TILESAW || home('tmp/tilesaw/'),
+    adapterOptions = {
+      imagedirectory: imagedirectory,
+      tiledirectory: tiledirectory,
+      tilesaw: tilesaw
+    },
+    directories = [imagedirectory, tiledirectory, tilesaw]
+
+directories.forEach(mkdirp.sync)
 
 var adapters = 'noop directory mia-api'
 
@@ -26,7 +40,7 @@ app.get('/:image', function(req, res) {
     } else {
       var _adapters = adapters.split(' ')
       _adapters.some(function(adapter, index) {
-        return require('./adapters/'+adapter)(imageName, function(err, mbtiles) {
+        return require('./adapters/'+adapter)(imageName, adapterOptions, function(err, mbtiles) {
           if(err) {
             if(index+1 == _adapters.length) res.send(404, err)
             return false

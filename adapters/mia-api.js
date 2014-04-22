@@ -1,14 +1,5 @@
 var httpget = require('http-get'),
-    exec = require('exec'),
-    mkdirp = require('mkdirp')
-
-var home = function(path) { return process.env.HOME + '/' + path },
-    imagedirectory = process.env.IMAGEDIRECTORY || home('tmp/tilesaw/data/images/'),
-    tiledirectory = process.env.TILEDIR || home('Documents/MapBox/tiles/'),
-    tilesaw = process.env.TILESAW || home('tmp/tilesaw/'),
-    directories = [imagedirectory, tiledirectory, tilesaw]
-
-directories.forEach(mkdirp.sync)
+    exec = require('exec')
 
 function maxDimensionForImage(id, cb) {
   rcli = require('redis').createClient()
@@ -22,19 +13,19 @@ function maxDimensionForImage(id, cb) {
   })
 }
 
-module.exports = function(imageId, callback) {
+module.exports = function(imageId, options, callback) {
   maxDimensionForImage(imageId, function(err, maxDimension) {
     if(err) return callback(err)
 
     var imageUrl = 'http://api.artsmia.org/images/'+imageId+'/'+maxDimension+'/large.jpg',
-        imageFile = imagedirectory + '/' + imageId + '.jpg'
+        imageFile = options.imagedirectory + '/' + imageId + '.jpg'
 
     httpget.get({url: imageUrl}, imageFile, function(error, result) {
       if(error || result == undefined) { return cb([error, result]) }
 
-      var saw = exec([tilesaw+'/tilesaw.sh', imageFile], function(err, out, code) {
+      var saw = exec([options.tilesaw+'/tilesaw.sh', imageFile], function(err, out, code) {
         if(code == 0) {
-          mv = exec(['mv', imageFile.replace('.jpg', '.mbtiles'), tiledirectory], function(err, out, code) {
+          mv = exec(['mv', imageFile.replace('.jpg', '.mbtiles'), options.tiledirectory], function(err, out, code) {
             exec(['rm', imageFile], function() {})
             callback(null, imageFile)
           })
