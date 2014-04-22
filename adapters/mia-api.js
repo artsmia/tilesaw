@@ -1,0 +1,47 @@
+var httpget = require('http-get'),
+    exec = require('exec'),
+    mkdirp = require('mkdirp')
+
+var home = function(path) { return process.env.HOME + '/' + path },
+    imagedirectory = process.env.IMAGEDIRECTORY || home('tmp/tilesaw/data/images/'),
+    tiledirectory = process.env.TILEDIR || home('Documents/MapBox/tiles/'),
+    tilesaw = process.env.TILESAW || home('tmp/tilesaw/'),
+    directories = [imagedirectory, tiledirectory, tilesaw]
+
+directories.forEach(mkdirp.sync)
+
+function maxDimensionForImage(id, cb) {
+  rcli = require('redis').createClient()
+  rcli.hget('object:'+Math.floor(id/1000), id, function(err, json) {
+    json = JSON.parse(json)
+    if(json.image == 'invalid') {
+      cb('invalid image')
+    } else {
+      cb(null, Math.max(json.image_width, json.image_height))
+    } 
+  })
+}
+
+module.exports = function(imageId, callback) {
+  maxDimensionForImage(imageId, function(err, maxDimension) {
+    if(err) return callback(err)
+
+    var imageUrl = 'http://api.artsmia.org/images/'+imageId+'/'+maxDimension+'/large.jpg',
+        imageFile = imagedirectory + '/' + imageId + '.jpg'
+
+    httpget.get({url: imageUrl}, imageFile, function(error, result) {
+      if(error || result == undefined) { return cb([error, result]) }
+
+      var saw = exec([tilesaw+'/tilesaw.sh', imageFile], function(err, out, code) {
+        if(code == 0) {
+          mv = exec(['mv', imageFile.replace('.jpg', '.mbtiles'), tiledirectory], function(err, out, code) {
+            exec(['rm', imageFile], function() {})
+            callback(null, imageFile)
+          })
+        } else {
+          callback(['tilesaw error: ', err, out, code])
+        }
+      })
+    })
+  })
+}

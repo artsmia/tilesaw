@@ -5,7 +5,7 @@ app = express()
 
 var tileserver = process.env.TILESERVER || 'http://localhost:8888/v2/'
 
-var adapters = 'noop directory'
+var adapters = 'noop directory mia-api'
 
 app.get('/:image', function(req, res) {
   var image = req.params.image,
