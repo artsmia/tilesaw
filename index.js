@@ -33,7 +33,7 @@ app.get('/:image', function(req, res) {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'GET')
 
-  tileJson = tileserver+imageName+'.json'
+  var tileJson = tileserver+imageName+'.json'
   http.get(tileJson, function(tileRes) {
     if(tileRes.statusCode == '200') {
       tileRes.pipe(res) // pipe through the JSON from tilestream

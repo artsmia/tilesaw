@@ -4,7 +4,7 @@ var httpget = require('http-get'),
 function maxDimensionForImage(id, cb) {
   rcli = require('redis').createClient()
   rcli.hget('object:'+Math.floor(id/1000), id, function(err, json) {
-    json = JSON.parse(json)
+    var json = JSON.parse(json)
     if(json.image == 'invalid') {
       cb('invalid image')
     } else {
