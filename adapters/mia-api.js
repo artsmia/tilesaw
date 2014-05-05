@@ -17,7 +17,7 @@ module.exports = function(imageId, options, callback) {
   maxDimensionForImage(imageId, function(err, maxDimension) {
     if(err) return callback(err)
 
-    var imageUrl = 'http://api.artsmia.org/images/'+imageId+'/'+maxDimension+'/large.jpg',
+    var imageUrl = 'http://api.artsmia.org/images/'+imageId+'/'+maxDimension+'/full.jpg',
         imageFile = options.imagedirectory + '/' + imageId + '.jpg'
 
     httpget.get({url: imageUrl}, imageFile, function(error, result) {
