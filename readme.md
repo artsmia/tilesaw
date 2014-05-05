@@ -41,19 +41,20 @@ find tiles for an image, it will try each adapter to find a suitable
 image. If the adapter succeeds, it's responsible for tiling the image
 and indicating its success. If not, the next adapter gets a try.
 
-Each adapter is a `function(imageName, callback)`. The `node` callback
+Each adapter is a `function(imageName, options, callback)`. The `node` callback
 style is `function(err, data)`: if `err` is non-null, something went
 wrong. Otherwise that adapter found an image matching `imageName` and
 tiled it.
 
-Two example adapters are provided:
+Example adapters:
 
 * `adapters/noop.js` doesn't do anything. It logs a message to the
   console and returns an error.
 * `adapters/directory.js` checks for a matching image in a predetermined
   directory. If one exists, it's tiled and passed back to the client.
+* `adapters/mia-api.js` pulls images from our API.
 
-[`var adapters = '…'`](https://github.com/kjell/tilesaw/blob/9d3f5f3efa6b317197b7e95be3c8b76530eda788/index.js#L8) is a space-delimited list of adapters to try. If all the listed adapters fail, `tilesaw` will return a `404`.
+[`var adapters = '…'`](https://github.com/artsmia/tilesaw/blob/91069061668886cf0e195f71486b428a79b7e951/index.js#L22) is a space-delimited list of adapters to try. If all the listed adapters fail, `tilesaw` will return a `404` with the error message from the latest adapter.
 
 ## Installation
 
