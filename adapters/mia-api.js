@@ -26,8 +26,10 @@ module.exports = function(imageId, options, callback) {
       var saw = exec([options.tilesaw+'/tilesaw.sh', imageFile], function(err, out, code) {
         if(code == 0) {
           mv = exec(['mv', imageFile.replace('.jpg', '.mbtiles'), options.tiledirectory], function(err, out, code) {
-            exec(['rm', imageFile], function() {})
-            callback(null, imageFile)
+            mvDir = exec(['mv', 'tiles/'+imageFile.replace('.jpg', ''), options.tiledirectory], function(err, out, code) {
+              exec(['rm', imageFile], function() {})
+              callback(null, imageFile)
+            })
           })
         } else {
           callback(['tilesaw error: ', err, out, code])
