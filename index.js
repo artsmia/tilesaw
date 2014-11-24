@@ -59,3 +59,4 @@ app.get('/', manifest)
 
 http.createServer(app).listen(process.env.PORT || 8887);
 console.log('tilesaw running on ' + (process.env.PORT || 8887))
+console.log('.')
